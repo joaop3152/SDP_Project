@@ -6,4 +6,3 @@
 - Push your branch `git push task-2/add-readme`
 - Create a pull request on github with the description of all the changes made so others can review it.
 - Wait for the review
--affafa
