@@ -1,5 +1,5 @@
 # client.py
-from network import create_socket
+from Application.network import create_socket
 
 def connect_to_server(host, port):
     client_socket = create_socket()

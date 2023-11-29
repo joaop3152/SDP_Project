@@ -1,6 +1,6 @@
 # server.py
 import threading
-from network import create_socket, bind_socket, listen
+from Application.network import create_socket, bind_socket, listen
 
 def handle_client(client_socket, client_address, clients):
     print(f"Conexao estabelecida com {client_address}")
