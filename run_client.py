@@ -38,27 +38,27 @@ def main():
 
         choice = input("\nPlease choose an option: ")
 
-        if choice == "1":
+        if choice == "1": #Create note # TODO: create the option to save a title and then the note. When displayed, shows only the title.
             utils.clear_console()
             note_content = input("\nStart writing: \n")
             create_note(client_socket, note_content)
 
-        elif choice == "2":
+        elif choice == "2": #List all notes of the authenticated user # TODO: List all notes by the title, and then give the option to open an note indicated by the index
             utils.clear_console()
             list_notes(client_socket)
 
-        elif choice == "3":
+        elif choice == "3": #Delete a note according an given index
             utils.clear_console()
             list_notes_to_erase(client_socket)
             note_index = input("\nIndex of note to be erased: ")
             delete_note(client_socket, note_index)
 
-        elif choice == "0":
+        elif choice == "0": #Close connection and exit application
             utils.clear_console()
             print("\nClosing client.\n Thank you for using Note Taking!\n")
             client_socket.close()
             break
-        else:
+        else: # Wrong input
             print("\nWrong option. Please try again.\n")
 
 
