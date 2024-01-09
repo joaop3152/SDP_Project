@@ -22,7 +22,7 @@ def handle_client(client_socket, client_address, users):
         # User authentication
         username = client_socket.recv(1024).decode()
         password = client_socket.recv(1024).decode()
-        
+
         # Verify user credentials (we may need to implement a more secure authentication mechanism)
         if authenticate_user(username, password):
             print(f"Authentication successful for {username}")
@@ -47,9 +47,7 @@ def handle_user_commands(username, users):
     client_socket = users[username]['socket']
 
     while True:
-        print("DEBUG: Listening client commands...")
-
-        # Receive user commands and perform actions based on the protocol
+        # Receive user commands and perform actions
         command = client_socket.recv(1024).decode()        
         if command.startswith("CREATE_NOTE"):
             note_content = command.split(":")[1]
@@ -66,7 +64,7 @@ def handle_user_commands(username, users):
 
 def create_note(username, note_content, users):
     users[username]['notes'].append(note_content)
-    print(f"Note created for {username}")
+    print(f"\nNote created for {username}\n")
 
 def list_notes(username, users):
     client_socket = users[username]['socket']
@@ -77,6 +75,6 @@ def list_notes(username, users):
 def delete_note(username, note_index, users):
     try:
         users[username]['notes'].pop(note_index - 1)
-        print(f"Note deleted for {username}")
+        print(f"\nNote deleted for {username}\n")
     except IndexError:
         print(f"Invalid note index for deletion")
