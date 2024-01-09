@@ -50,8 +50,9 @@ def handle_user_commands(username, users):
         # Receive user commands and perform actions
         command = client_socket.recv(1024).decode()        
         if command.startswith("CREATE_NOTE"):
-            note_content = command.split(":")[1]
-            create_note(username, note_content, users)
+            note_title = command.split(":")[1]
+            note_content = command.split(":")[2]
+            create_note(username, note_title, note_content, users)
         elif command.startswith("LIST_NOTES"):
             list_notes(username, users)
         elif command.startswith("DELETE_NOTE"):
@@ -62,15 +63,18 @@ def handle_user_commands(username, users):
 
         # Add more commands as needed
 
-def create_note(username, note_content, users):
-    users[username]['notes'].append(note_content)
+def create_note(username, note_title, note_content, users):
+    users[username]['notes'].append([note_title,note_content])
     print(f"\nNote created for {username}\n")
 
 def list_notes(username, users):
     client_socket = users[username]['socket']
     notes = users[username]['notes']
-    notes_str = "\n".join([f"{index + 1}. {note}" for index, note in enumerate(notes)])
-    client_socket.sendall(notes_str.encode())
+    if(len(notes) == 0):
+        client_socket.sendall("No notes.".encode())
+    else:
+        notes_str = "\n".join([f"{index + 1}. {note[0]}" for index, note in enumerate(notes)])
+        client_socket.sendall(notes_str.encode())
 
 def delete_note(username, note_index, users):
     try:

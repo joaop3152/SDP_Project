@@ -22,7 +22,6 @@ def main():
         print("Something went wrong with the connection.")
         sys.exit()
 
-
     # maybe create a better way to authenticate user !
     print(f"\nWelcome to {APP_TITLE}!\n")
     print("--- Please authenticate ---")
@@ -38,10 +37,11 @@ def main():
 
         choice = input("\nPlease choose an option: ")
 
-        if choice == "1": #Create note # TODO: create the option to save a title and then the note. When displayed, shows only the title.
+        if choice == "1": #Create note
             utils.clear_console()
+            note_title = input("\nInsert a title: ")
             note_content = input("\nStart writing: \n")
-            create_note(client_socket, note_content)
+            create_note(client_socket, note_title, note_content)
 
         elif choice == "2": #List all notes of the authenticated user # TODO: List all notes by the title, and then give the option to open an note indicated by the index
             utils.clear_console()
