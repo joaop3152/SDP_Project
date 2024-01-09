@@ -19,12 +19,21 @@ def list_notes(client_socket):
     client_socket.sendall("LIST_NOTES".encode())
     data = client_socket.recv(1024)
     print(f"\nYour Notes:\n{data.decode()}\n")
+
+    if(data.decode() == "No notes."):
+        input("Press Enter to continue...")
+        return -1
+    
+    return 0
+
+def list_note(client_socket, note_index):
+    client_socket.sendall(f"LIST_NOTE:{note_index}".encode())
+    data_title = client_socket.recv(1024).decode()
+    data_body = client_socket.recv(1024).decode()
+    print(f"\nTitle: {data_title}")
+    print(f"\nBody: {data_body}\n")
     input("Press Enter to continue...")
 
-def list_notes_to_erase(client_socket):
-    client_socket.sendall("LIST_NOTES".encode())
-    data = client_socket.recv(1024)
-    print(f"\nYour Notes:\n{data.decode()}\n")
 
 def delete_note(client_socket, note_index):
     client_socket.sendall(f"DELETE_NOTE:{note_index}".encode())

@@ -55,6 +55,9 @@ def handle_user_commands(username, users):
             create_note(username, note_title, note_content, users)
         elif command.startswith("LIST_NOTES"):
             list_notes(username, users)
+        elif command.startswith("LIST_NOTE"):
+            note_index = int(command.split(":")[1])
+            list_note(username, note_index, users)
         elif command.startswith("DELETE_NOTE"):
             note_index = int(command.split(":")[1])
             delete_note(username, note_index, users)
@@ -75,6 +78,16 @@ def list_notes(username, users):
     else:
         notes_str = "\n".join([f"{index + 1}. {note[0]}" for index, note in enumerate(notes)])
         client_socket.sendall(notes_str.encode())
+
+def list_note(username, note_index, users):
+    client_socket = users[username]['socket'] # debug here
+    try:
+        note = users[username]['notes'][note_index - 1]
+    except:
+        client_socket.sendall("Something went wrong.".encode())
+
+    client_socket.sendall(note[0].encode())
+    client_socket.sendall(note[1].encode())
 
 def delete_note(username, note_index, users):
     try:

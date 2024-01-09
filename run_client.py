@@ -43,13 +43,28 @@ def main():
             note_content = input("\nStart writing: \n")
             create_note(client_socket, note_title, note_content)
 
-        elif choice == "2": #List all notes of the authenticated user # TODO: List all notes by the title, and then give the option to open an note indicated by the index
+        elif choice == "2": #List all notes of the authenticated user
             utils.clear_console()
-            list_notes(client_socket)
+            if(list_notes(client_socket) == 0): # check for no notes
+                lock = 0
+                while lock == 0:
+                    utils.clear_console()
+                    list_notes(client_socket)
+                    try:
+                        sub_choice = int(input("\nSelect a note by index to view - or - 0 to exit: "))
+                    except:
+                        print("Please, input only a number.")
+
+                    if(sub_choice == 0):
+                        lock = 1
+                    else:
+                        utils.clear_console()
+                        list_note(client_socket, sub_choice)
+
 
         elif choice == "3": #Delete a note according an given index
             utils.clear_console()
-            list_notes_to_erase(client_socket)
+            list_notes(client_socket)
             note_index = input("\nIndex of note to be erased: ")
             delete_note(client_socket, note_index)
 
