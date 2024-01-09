@@ -1,4 +1,4 @@
-# network.py
+# network.py - This module contains basic networking functions for creating, binding, and listening on sockets.
 import socket
 
 def create_socket():
