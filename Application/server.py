@@ -1,6 +1,8 @@
 # server.py - This is the main server module responsible for handling client connections.
 import threading
 from Application.network import create_socket, bind_socket, listen
+from Model import database
+
 
 def start_server(host, port):
     server_socket = create_socket()
@@ -67,6 +69,8 @@ def handle_user_commands(username, users):
         # Add more commands as needed
 
 def create_note(username, note_title, note_content, users):
+    database.insert_note(note_title, note_content, 1)
+
     users[username]['notes'].append([note_title,note_content])
     print(f"\nNote created for {username}\n")
 
