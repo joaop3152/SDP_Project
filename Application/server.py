@@ -28,13 +28,15 @@ def handle_client(client_socket, client_address, users):
         # Verify user credentials (we may need to implement a more secure authentication mechanism)
         if authenticate_user(username, password):
             print(f"Authentication successful for {username}")
-            users[username] = {'socket': client_socket, 'notes': []}
+            client_socket.sendall(username.encode())
 
+            users[username] = {'socket': client_socket, 'notes': []}
+            
             # Handle user commands (create, list, delete notes, etc.)
             handle_user_commands(username, users)
         else:
             print(f"Authentication failed for {username}")
-            client_socket.sendall("Authentication failed".encode())
+            client_socket.sendall("AUTH_FAILED".encode())
     except Exception as e:
         print(f"Error handling client: {e}")
     finally:
@@ -43,7 +45,12 @@ def handle_client(client_socket, client_address, users):
 # Add functions for user authentication and handling user commands
 def authenticate_user(username, password):
     # Implement your authentication logic (e.g., check against a user database)
-    return True  # Replace with actual authentication logic
+    # CASES:    
+    #   username dont exist then register
+    #   username exist but password dont match
+    #   username dont exist , but when registered aready exists a username
+
+    return False  # Replace with actual authentication logic
 
 def handle_user_commands(username, users):
     client_socket = users[username]['socket']

@@ -1,4 +1,3 @@
-
 import mysql.connector
 from mysql.connector import Error
 
@@ -28,6 +27,7 @@ def perform_query(query, params):
             print(f"Error connecting to the database {err}")
             return None
 
+# Databse - Notes
 def insert_note(title, body, user_id):
     query = "INSERT INTO note (title, description, user_id) VALUES (%s, %s, %s)"
     perform_query(query, (title, body, user_id))

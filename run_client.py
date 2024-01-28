@@ -7,6 +7,25 @@ APP_TITLE = "Note Taking"
 SERVER_IP = '127.0.0.1'
 PORT = 8888
 
+def show_unauthenticated_menu():
+    utils.clear_console()
+    print(f"\n--- Menu - {APP_TITLE} ---\n")
+    print("1. Authenticate")
+    print("2. Register")
+    print("0. Exit")
+
+def auth(type, client_socket):
+    utils.clear_console()
+    print(f"\nWelcome to {APP_TITLE}!\n")
+    print(f"--- Please {type}. ---")
+
+    username = input("Username: ")
+    password = input("Password: ")
+
+    res = send_name(client_socket, username, password)
+
+    return res
+
 def show_authenticated_menu(username):
     utils.clear_console()
     print(f"\n--- Menu - {APP_TITLE} - Welcome {username} ---\n")
@@ -15,6 +34,11 @@ def show_authenticated_menu(username):
     print("3. Delete note")
     print("0. Exit")
 
+def restart_connection(client_socket):
+    #Restart connection
+    client_socket.close()
+    main()
+
 def main():
     try:
         client_socket = connect_to_server(SERVER_IP, PORT)
@@ -22,18 +46,44 @@ def main():
         print("Something went wrong with the connection.")
         sys.exit()
 
-    # maybe create a better way to authenticate user !
-    print(f"\nWelcome to {APP_TITLE}!\n")
-    print("--- Please authenticate ---")
-    username = input("Username: ")
-    password = input("Password: ")
-    send_name(client_socket, username, password)
+    while True:
+        show_unauthenticated_menu()
+        
+        choice = input("\nPlease choose an option: ")
+
+        if(choice == "1"):
+            res = auth("authenticate", client_socket)
+
+            if(res == "AUTH_FAILED"):
+                print("\nAuthetication failed. Please try again.")
+                input("Press Enter to continue...")
+                restart_connection(client_socket)
+            else:
+                break
+
+        elif(choice == "2"):
+            res = auth("register", client_socket)
+
+            if(res == "AUTH_FAILED"):
+                print("\nRegistration failed. Please try another username.")
+                input("Press Enter to continue...")
+                restart_connection(client_socket)
+            else:
+                break
+
+        elif(choice == "0"):
+            utils.clear_console()
+            print(f"\nClosing client.\nThank you for using {APP_TITLE}!\n")
+            client_socket.close()
+            break
+        else:
+            print("\nWrong option. Please try again.\n")
+            input("Press Enter to continue...")
 
     # NOTE: server commands only work with the client authenticated 
-
     # Main loop (enters loop with client already authenticated)
     while True:
-        show_authenticated_menu(username)
+        show_authenticated_menu(res)
 
         choice = input("\nPlease choose an option: ")
 
@@ -70,11 +120,12 @@ def main():
 
         elif choice == "0": #Close connection and exit application
             utils.clear_console()
-            print("\nClosing client.\n Thank you for using Note Taking!\n")
+            print(F"\nClosing client.\n Thank you for using {APP_TITLE}!\n")
             client_socket.close()
             break
         else: # Wrong input
             print("\nWrong option. Please try again.\n")
+            input("Press Enter to continue...")
 
 
 if __name__ == "__main__":

@@ -10,6 +10,10 @@ def send_name(client_socket, username, password):
     client_socket.sendall(username.encode())
     client_socket.sendall(password.encode())
 
+    res = client_socket.recv(1024)
+
+    return res.decode()
+
 def create_note(client_socket, note_title, note_content):
     client_socket.sendall(f"CREATE_NOTE:{note_title}:{note_content}".encode())
     print(f"\nNote created!\n")
