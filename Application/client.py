@@ -30,12 +30,10 @@ def list_notes(client_socket):
      
     return 0
 
-def list_note(client_socket, note_index):
-    client_socket.sendall(f"LIST_NOTE:{note_index}".encode())
-    data_title = client_socket.recv(1024).decode()
-    data_body = client_socket.recv(1024).decode()
-    print(f"\nTitle: {data_title}")
-    print(f"\nBody: {data_body}\n")
+def list_note(client_socket, note_id):
+    client_socket.sendall(f"LIST_NOTE:{note_id}".encode())
+    note = client_socket.recv(1024).decode()
+    print(note)
     input("Press Enter to continue...")
 
 
