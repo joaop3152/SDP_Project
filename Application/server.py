@@ -68,34 +68,33 @@ def handle_user_commands(username, users):
 
         # Add more commands as needed
 
-def create_note(username, note_title, note_content, users):
-    database.insert_note(note_title, note_content, 1)
-
-    users[username]['notes'].append([note_title,note_content])
+def create_note(username, note_title, note_content, user_id):
+    database.insert_note(note_title, note_content, user_id)
     print(f"\nNote created for {username}\n")
 
-def list_notes(username, users):
+def list_notes(username, user_id, users):
     client_socket = users[username]['socket']
-    notes = users[username]['notes']
-    if(len(notes) == 0):
+
+    notes = database.list_all_user_notes(user_id)
+    if len(notes) == 0:
         client_socket.sendall("No notes.".encode())
     else:
-        notes_str = "\n".join([f"{index + 1}. {note[0]}" for index, note in enumerate(notes)])
-        client_socket.sendall(notes_str.encode())
+        print(notes)
+        client_socket.sendall(notes.encode())
 
-def list_note(username, note_index, users):
+def list_note(username, note_id, user_id, users):
     client_socket = users[username]['socket'] # debug here
     try:
-        note = users[username]['notes'][note_index - 1]
+        note = database.get_note(note_id, 1)
+        print(note)
+        client_socket.sendall(note.encode())
     except:
         client_socket.sendall("Something went wrong.".encode())
 
-    client_socket.sendall(note[0].encode())
-    client_socket.sendall(note[1].encode())
 
-def delete_note(username, note_index, users):
+def delete_note(username, note_id, user_id):
     try:
-        users[username]['notes'].pop(note_index - 1)
+        database.delete_note(note_id, user_id)
         print(f"\nNote deleted for {username}\n")
     except IndexError:
-        print(f"Invalid note index for deletion")
+        print(f"Invalid note id for deletion")
