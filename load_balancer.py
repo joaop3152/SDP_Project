@@ -1,53 +1,46 @@
-#Load Balancer - Round Robin
 import socket
 import threading
-from Application.network import *
 
-class LoadBalancer:
-    def __init__(self, servers):
-        self.servers = servers
-        self.current_server = 0
-        self.lock = threading.Lock()
+# Define a list of values to be sent to clients
+data_list = [8888, 8889] # add more servers if needed
+current_index = 0
 
-    def get_next_server(self):
-        with self.lock:
-            server = self.servers[self.current_server]
-            self.current_server = (self.current_server + 1) % len(self.servers)
-        return server
+def handle_client(client_socket):
+    global current_index
 
-    def start(self, lb_host, lb_port):
-        lb_socket = create_socket()
-        bind_socket(lb_socket, lb_host, lb_port)
-        listen(lb_socket)
-        print(f"Load Balancer ready to receive connections on {lb_host}:{lb_port}...")
+    # Get the value from the list based on the current index
+    data_to_send = data_list[current_index]
 
-        while True:
-            conn, addr = lb_socket.accept()
-            target_server = self.get_next_server()
-            self.forward_request(conn, target_server)
+    # Increment the index for the next connection
+    current_index = (current_index + 1) % len(data_list)
 
-    def forward_request(self, conn, target_server):
-        with socket.create_connection(target_server) as server_conn:
-            print(f"Forwarding request to {target_server}")
-            
-            print("\nÀ espera do cliente...")
-            data = conn.recv(1024)
+    # Send the value to the client
+    client_socket.sendall(str(data_to_send).encode())
+    print("sent " + str(data_to_send))
 
-            print("\nRecebido. A enviar para o server...")
-            server_conn.sendall(data)
+    # Close the connection
+    client_socket.close()
 
-            print("\nEnviado. À espera da resposta do server...")
-            data = server_conn.recv(1024)
+def start_server(port):
+    # Create a socket object
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-            print("\nRecebido. A enviar para o cliente...")
-            conn.sendall(data)
+    # Bind the socket to a specific address and port
+    server_socket.bind(('127.0.0.1', port))
 
-            print("\nEnviado.")
+    # Listen for incoming connections
+    server_socket.listen()
+    print(f"Load balancing listening on port {port}...")
+
+    while True:
+        # Wait for a connection
+        client_socket, client_address = server_socket.accept()
+        print(f"Connection from {client_address}")
+
+        # Create a new thread to handle the client
+        client_thread = threading.Thread(target=handle_client, args=(client_socket,))
+        client_thread.start()
 
 if __name__ == "__main__":
-    # Define your server addresses here
-    server_addresses = [("127.0.0.1", 8888), ("127.0.0.1", 8889)]
-
-    # Create and start the load balancer
-    load_balancer = LoadBalancer(server_addresses)
-    load_balancer.start("127.0.0.1", 8887)
+    port_number = 8887
+    start_server(port_number)

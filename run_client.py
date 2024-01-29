@@ -41,7 +41,8 @@ def restart_connection(client_socket):
 
 def main():
     try:
-        client_socket = connect_to_server(SERVER_IP, PORT)
+        serverport = int(get_loadbalancer_port(PORT))
+        client_socket = connect_to_server(SERVER_IP, serverport)
     except:
         print("Something went wrong with the connection.")
         sys.exit()
