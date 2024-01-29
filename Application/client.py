@@ -7,8 +7,9 @@ def connect_to_server(host, port):
     return client_socket
 
 def send_name(client_socket, username, password, mode):
-    request = "" + username + ":" + password + ":" + mode
-    client_socket.sendall(request.encode())
+    payload = username + ":" + password + ":" + mode
+    
+    client_socket.sendall(payload.encode())
 
     res = client_socket.recv(1024)
 
