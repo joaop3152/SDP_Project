@@ -6,6 +6,19 @@ def connect_to_server(host, port):
     client_socket.connect((host, port))
     return client_socket
 
+def get_loadbalancer_port(port):
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.connect(('localhost', port))
+
+    # Receive data from the server
+    data_received = client_socket.recv(1024).decode('utf-8')
+    print(f"Received data from server: {data_received}")
+
+    # Close the connection
+    client_socket.close()
+
+    return data_received
+
 def send_name(client_socket, username, password, mode):
     payload = username + ":" + password + ":" + mode
     

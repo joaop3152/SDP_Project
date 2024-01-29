@@ -4,8 +4,8 @@ import Application.utilities as utils
 from Application.client import *
 
 APP_TITLE = "Note Taking"
-SERVER_IP = '127.0.0.1'
-PORT = 8888
+SERVER_IP = 'localhost'
+PORT = 8887
 
 def show_unauthenticated_menu():
     utils.clear_console()
@@ -41,7 +41,8 @@ def restart_connection(client_socket):
 
 def main():
     try:
-        client_socket = connect_to_server(SERVER_IP, PORT)
+        serverport = int(get_loadbalancer_port(PORT))
+        client_socket = connect_to_server(SERVER_IP, serverport)
     except:
         print("Something went wrong with the connection.")
         sys.exit()
