@@ -22,7 +22,7 @@ def auth(type, client_socket):
     username = input("Username: ")
     password = input("Password: ")
 
-    res = send_name(client_socket, username, password)
+    res = send_name(client_socket, username, password, type)
 
     return res
 
@@ -46,6 +46,7 @@ def main():
         print("Something went wrong with the connection.")
         sys.exit()
 
+    # ----- Authentication Process ---------
     while True:
         show_unauthenticated_menu()
         
@@ -80,8 +81,11 @@ def main():
             print("\nWrong option. Please try again.\n")
             input("Press Enter to continue...")
 
+    #-----------------------------
+            
     # NOTE: server commands only work with the client authenticated 
     # Main loop (enters loop with client already authenticated)
+            
     while True:
         show_authenticated_menu(res)
 

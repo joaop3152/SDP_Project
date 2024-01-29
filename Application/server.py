@@ -3,7 +3,6 @@ import threading
 from Application.network import create_socket, bind_socket, listen
 from Model import database
 
-
 def start_server(host, port):
     server_socket = create_socket()
     bind_socket(server_socket, host, port)
@@ -24,9 +23,12 @@ def handle_client(client_socket, client_address, users):
         # User authentication
         username = client_socket.recv(1024).decode()
         password = client_socket.recv(1024).decode()
+        type = client_socket.recv(1024).decode()
+
+        print(type)
 
         # Verify user credentials (we may need to implement a more secure authentication mechanism)
-        if authenticate_user(username, password):
+        if authenticate_user(username, password, type):
             print(f"Authentication successful for {username}")
             client_socket.sendall(username.encode())
 
@@ -43,14 +45,21 @@ def handle_client(client_socket, client_address, users):
         client_socket.close()
 
 # Add functions for user authentication and handling user commands
-def authenticate_user(username, password):
-    # Implement your authentication logic (e.g., check against a user database)
+def authenticate_user(username, password, type): ## type 0 is register and type 1 is auth
+    print(type)
     # CASES:    
-    #   username dont exist then register
-    #   username exist but password dont match
-    #   username dont exist , but when registered aready exists a username
+    if(database.search_user(username) == -1 and type == 0): #   username dont exist then register
+        database.insert_user(username, password)
+        return True
+    else:
+        if(type == 'register'): # trying to register a existing username
+            return False
+        #   username exist but password dont match
+        if(database.search_user(username,2) != password):
+            return False
+        
 
-    return False  # Replace with actual authentication logic
+    return True
 
 def handle_user_commands(username, users):
     client_socket = users[username]['socket']
