@@ -32,9 +32,11 @@ def handle_client(client_socket, client_address, users):
             client_socket.sendall(username.encode())
 
             users[username] = {'socket': client_socket, 'notes': []}
+
+            user_id = database.search_user(username)
             
             # Handle user commands (create, list, delete notes, etc.)
-            handle_user_commands(username, users)
+            handle_user_commands(username, users, user_id)
         else:
             print(f"Authentication failed for {username}")
             client_socket.sendall("AUTH_FAILED".encode())
@@ -46,7 +48,7 @@ def handle_client(client_socket, client_address, users):
 # Add functions for user authentication and handling user commands
 def authenticate_user(username, password, mode): ## mode 0 is register and mode 1 is auth
     # CASES:    
-    if(database.search_user(username) == -1 and mode == 0): #   username dont exist then register
+    if(database.search_user(username) == -1 and mode == 'register'): #   username dont exist then register
         database.insert_user(username, password)
         return True
     else:
@@ -59,7 +61,7 @@ def authenticate_user(username, password, mode): ## mode 0 is register and mode 
 
     return True
 
-def handle_user_commands(username, users):
+def handle_user_commands(username, users, user_id):
     client_socket = users[username]['socket']
 
     while True:
@@ -68,15 +70,15 @@ def handle_user_commands(username, users):
         if command.startswith("CREATE_NOTE"):
             note_title = command.split(":")[1]
             note_content = command.split(":")[2]
-            create_note(username, note_title, note_content, users)
+            create_note(username, note_title, note_content, user_id)
         elif command.startswith("LIST_NOTES"):
-            list_notes(username, users)
+            list_notes(username, user_id, users)
         elif command.startswith("LIST_NOTE"):
             note_index = int(command.split(":")[1])
-            list_note(username, note_index, users)
+            list_note(username, note_index, user_id, users)
         elif command.startswith("DELETE_NOTE"):
             note_index = int(command.split(":")[1])
-            delete_note(username, note_index, users)
+            delete_note(username, note_index, user_id)
         elif command.startswith("GET_AUTH"):
             client_socket.sendall(username.encode())
 
@@ -88,23 +90,20 @@ def create_note(username, note_title, note_content, user_id):
 
 def list_notes(username, user_id, users):
     client_socket = users[username]['socket']
-
     notes = database.list_all_user_notes(user_id)
+
     if len(notes) == 0:
         client_socket.sendall("No notes.".encode())
     else:
-        print(notes)
-        client_socket.sendall(notes.encode())
+        client_socket.sendall(get_query_result(notes).encode())
 
 def list_note(username, note_id, user_id, users):
     client_socket = users[username]['socket'] # debug here
     try:
-        note = database.get_note(note_id, 1)
-        print(note)
-        client_socket.sendall(note.encode())
+        note = database.get_note(note_id, user_id)
+        client_socket.sendall(get_query_result(note).encode())
     except:
         client_socket.sendall("Something went wrong.".encode())
-
 
 def delete_note(username, note_id, user_id):
     try:
@@ -112,3 +111,9 @@ def delete_note(username, note_id, user_id):
         print(f"\nNote deleted for {username}\n")
     except IndexError:
         print(f"Invalid note id for deletion")
+
+def get_query_result(cursor):
+    result = ''
+    for i in cursor:
+        result += "Note id: {} \n  Title: {} \n  Description: {}\n".format(i[0], i[1], i[2])
+    return result

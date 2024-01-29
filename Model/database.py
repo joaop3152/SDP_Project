@@ -46,20 +46,21 @@ def perform_search_query(query, params=()):
 # Databse - Notes
 def insert_note(title, body, user_id):
     query = "INSERT INTO note (title, description, user_id) VALUES (%s, %s, %s)"
-    return execute_query(query, (title, body, user_id), False)
+    return perform_query(query, (title, body, user_id))
 
 # Database - User
 def insert_user(username, password):
     query = "INSERT INTO user (username, password) VALUES (%s, %s)"
-    return execute_query(query, (username, password), False)
+    return perform_query(query, (username, password))
 
 def list_all_user_notes(user_id):
     query = "SELECT id, title, description FROM note WHERE user_id = %s"
-    return execute_query(query, (user_id,), True)
+    return perform_search_query(query, (user_id,))
 
 def get_note(note_id, user_id):
     query = "SELECT id, title, description FROM note WHERE id = %s and user_id = %s"
-    return execute_query(query, (note_id, user_id), True)
+    return perform_search_query(query, (note_id, user_id))
+
 def search_user(username, get = 0): # return id of user if founded. Return -1 if not founded. get can be 0(id), 1(username) and 2(password)
     query = f"SELECT * FROM notes.user where username = '{username}'"
     res = perform_search_query(query)
@@ -75,16 +76,6 @@ def search_user(username, get = 0): # return id of user if founded. Return -1 if
         else:
             print("Select the right get index.")
 
-
-
-
-
 def delete_note(note_id, user_id):
     query = "DELETE FROM note WHERE id = %s AND user_id = %s"
-    return execute_query(query, (note_id, user_id), False)
-
-def get_query_result(cursor):
-    result = ''
-    for (id, title, description) in cursor:
-        result += "Note id: {} \n  Title: {} \n  Description: {}\n".format(id, title, description)
-    return result
+    return perform_query(query, (note_id, user_id))
