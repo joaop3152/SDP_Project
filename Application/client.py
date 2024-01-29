@@ -6,10 +6,10 @@ def connect_to_server(host, port):
     client_socket.connect((host, port))
     return client_socket
 
-def send_name(client_socket, username, password, type):
+def send_name(client_socket, username, password, mode):
     client_socket.sendall(username.encode())
     client_socket.sendall(password.encode())
-    client_socket.sendall(type.encode())
+    client_socket.sendall(mode.encode())
 
     res = client_socket.recv(1024)
 
@@ -28,7 +28,7 @@ def list_notes(client_socket):
     if(data.decode() == "No notes."):
         input("Press Enter to continue...")
         return -1
-    
+     
     return 0
 
 def list_note(client_socket, note_index):

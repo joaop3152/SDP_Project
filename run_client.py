@@ -14,15 +14,15 @@ def show_unauthenticated_menu():
     print("2. Register")
     print("0. Exit")
 
-def auth(type, client_socket):
+def auth(mode, client_socket):
     utils.clear_console()
     print(f"\nWelcome to {APP_TITLE}!\n")
-    print(f"--- Please {type}. ---")
+    print(f"--- Please {mode}. ---")
 
     username = input("Username: ")
     password = input("Password: ")
 
-    res = send_name(client_socket, username, password, type)
+    res = send_name(client_socket, username, password, mode)
 
     return res
 

@@ -23,10 +23,10 @@ def handle_client(client_socket, client_address, users):
         # User authentication
         username = client_socket.recv(1024).decode()
         password = client_socket.recv(1024).decode()
-        type = client_socket.recv(1024).decode()
+        mode = client_socket.recv(1024).decode()
 
         # Verify user credentials (we may need to implement a more secure authentication mechanism)
-        if authenticate_user(username, password, type):
+        if authenticate_user(username, password, mode):
             print(f"Authentication successful for {username}")
             client_socket.sendall(username.encode())
 
