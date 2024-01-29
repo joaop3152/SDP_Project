@@ -48,6 +48,15 @@ def insert_note(title, body, user_id):
     query = "INSERT INTO note (title, description, user_id) VALUES (%s, %s, %s)"
     perform_query(query, (title, body, user_id))
 
+def fetch_notes(user_id): # get all notes from a user
+    pass
+
+def fetch_note(user_id, note_id): # get a note from a user
+    pass
+
+def delete_note(user_id, note_id): # delete a note
+    pass
+
 # Database - User
 def insert_user(username, password):
     query = "INSERT INTO user (username, password) VALUES (%s, %s)"
@@ -62,7 +71,7 @@ def search_user(username, get = 0): # return id of user if founded. Return -1 if
     else:
         if(get == 0 or get == 1 or get == 2):
             if(get == 0):   
-                return int(res[0][get]) # return according to get param
+                return int(res[0][get]) # return id 
             else:
                 return res[0][get] # return according to get param
         else:

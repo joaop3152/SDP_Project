@@ -25,8 +25,6 @@ def handle_client(client_socket, client_address, users):
         password = client_socket.recv(1024).decode()
         type = client_socket.recv(1024).decode()
 
-        print(type)
-
         # Verify user credentials (we may need to implement a more secure authentication mechanism)
         if authenticate_user(username, password, type):
             print(f"Authentication successful for {username}")
@@ -46,7 +44,6 @@ def handle_client(client_socket, client_address, users):
 
 # Add functions for user authentication and handling user commands
 def authenticate_user(username, password, type): ## type 0 is register and type 1 is auth
-    print(type)
     # CASES:    
     if(database.search_user(username) == -1 and type == 0): #   username dont exist then register
         database.insert_user(username, password)
