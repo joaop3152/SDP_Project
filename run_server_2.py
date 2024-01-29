@@ -3,7 +3,7 @@ import sys
 from Application.server import start_server
 
 HOST = '127.0.0.1'
-PORT = 6666
+PORT = 8889
 
 def main():
     start_server(HOST, PORT)

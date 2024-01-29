@@ -5,7 +5,7 @@ from Application.client import *
 
 APP_TITLE = "Note Taking"
 SERVER_IP = '127.0.0.1'
-PORT = 8888
+PORT = 8887 # port of load balancer
 
 def show_unauthenticated_menu():
     utils.clear_console()

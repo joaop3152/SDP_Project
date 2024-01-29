@@ -22,6 +22,8 @@ def handle_client(client_socket, client_address, users):
 
         request = client_socket.recv(1024).decode().split(':')
 
+        print(request)
+
         username = request[0]
         password = request[1]
         mode = request[2]
