@@ -1,7 +1,7 @@
 # server.py - This is the main server module responsible for handling client connections.
 import threading
-from Application.network import create_socket, bind_socket, listen
-from Model import database
+from Application.network import *
+from Model.database import *
 
 def start_server(host, port):
     server_socket = create_socket()
@@ -35,7 +35,7 @@ def handle_client(client_socket, client_address, users):
 
             users[username] = {'socket': client_socket, 'notes': []}
 
-            user_id = database.search_user(username)
+            user_id = bd_search_user(username)
             
             # Handle user commands (create, list, delete notes, etc.)
             handle_user_commands(username, users, user_id)
@@ -50,14 +50,14 @@ def handle_client(client_socket, client_address, users):
 # Add functions for user authentication and handling user commands
 def authenticate_user(username, password, mode): ## mode 0 is register and mode 1 is auth
     # CASES:    
-    if(database.search_user(username) == -1 and mode == 'register'): #   username dont exist then register
-        database.insert_user(username, password)
+    if(bd_search_user(username) == -1 and mode == 'register'): #   username dont exist then register
+        bd_insert_user(username, password)
         return True
     else:
         if(mode == 'register'): # trying to register a existing username
             return False
         #   username exist but password dont match
-        if(database.search_user(username,2) != password):
+        if(bd_search_user(username,2) != password):
             return False
         
 
@@ -87,35 +87,38 @@ def handle_user_commands(username, users, user_id):
         # Add more commands as needed
 
 def create_note(username, note_title, note_content, user_id):
-    database.insert_note(note_title, note_content, user_id)
+    bd_insert_note(note_title, note_content, user_id)
     print(f"\nNote created for {username}\n")
 
 def list_notes(username, user_id, users):
     client_socket = users[username]['socket']
-    notes = database.list_all_user_notes(user_id)
+    notes = bd_get_notes(user_id)
 
     if len(notes) == 0:
         client_socket.sendall("No notes.".encode())
     else:
-        client_socket.sendall(get_query_result(notes).encode())
+        client_socket.sendall(formated_notes(notes).encode())
 
 def list_note(username, note_id, user_id, users):
-    client_socket = users[username]['socket'] # debug here
+    client_socket = users[username]['socket']
     try:
-        note = database.get_note(note_id, user_id)
-        client_socket.sendall(get_query_result(note).encode())
+        note = bd_get_note(note_id, user_id)
+        if(len(note) == 0): 
+            client_socket.sendall("Wrong Index".encode())
+        else:
+            client_socket.sendall(formated_notes(note).encode())
     except:
         client_socket.sendall("Something went wrong.".encode())
 
 def delete_note(username, note_id, user_id):
     try:
-        database.delete_note(note_id, user_id)
+        bd_delete_note(note_id, user_id)
         print(f"\nNote deleted for {username}\n")
     except IndexError:
         print(f"Invalid note id for deletion")
 
-def get_query_result(cursor):
+def formated_notes(cursor):
     result = ''
     for i in cursor:
-        result += "Note id: {} \n  Title: {} \n  Description: {}\n".format(i[0], i[1], i[2])
+        result += "Note id: {} \n  Title: {} \n  Body: {}\n".format(i[0], i[1], i[2])
     return result

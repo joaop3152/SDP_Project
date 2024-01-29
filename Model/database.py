@@ -1,5 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
+from Application.encryption import *
 
 def create_db_connection():
     try:
@@ -43,25 +44,52 @@ def perform_search_query(query, params=()):
             print(f"Error connecting to the database {err}")
             return None
 
-# Databse - Notes
-def insert_note(title, body, user_id):
+# Database - Notes
+def bd_insert_note(title, body, user_id):
     query = "INSERT INTO note (title, description, user_id) VALUES (%s, %s, %s)"
-    return perform_query(query, (title, body, user_id))
+    return perform_query(query, (encrypt(title), encrypt(body), user_id))
+
+def bd_get_notes(user_id):
+    query = "SELECT id, title, description FROM note WHERE user_id = %s"
+    query_results = perform_search_query(query, (user_id,))
+
+    results = list()
+    for i in query_results:
+        l = list(i)
+        l[0] = l[0]          #id
+        l[1] = decrypt(l[1]) #title
+        l[2] = decrypt(l[2]) #body
+
+        results.append(tuple(l))
+
+    return results
+
+def bd_get_note(note_id, user_id):
+    query = "SELECT id, title, description FROM note WHERE id = %s and user_id = %s"
+    query_results = perform_search_query(query, (note_id,user_id))
+
+    results = list()
+    for i in query_results:
+        l = list(i)
+        l[0] = l[0]             #id
+        l[1] = decrypt(l[1])    #title
+        l[2] = decrypt(l[2])    #body
+
+        results.append(tuple(l))
+        
+    return results
+
+
+def bd_delete_note(note_id, user_id):
+    query = "DELETE FROM note WHERE id = %s AND user_id = %s"
+    return perform_query(query, (note_id, user_id))
 
 # Database - User
-def insert_user(username, password):
+def bd_insert_user(username, password):
     query = "INSERT INTO user (username, password) VALUES (%s, %s)"
     return perform_query(query, (username, password))
 
-def list_all_user_notes(user_id):
-    query = "SELECT id, title, description FROM note WHERE user_id = %s"
-    return perform_search_query(query, (user_id,))
-
-def get_note(note_id, user_id):
-    query = "SELECT id, title, description FROM note WHERE id = %s and user_id = %s"
-    return perform_search_query(query, (note_id, user_id))
-
-def search_user(username, get = 0): # return id of user if founded. Return -1 if not founded. get can be 0(id), 1(username) and 2(password)
+def bd_search_user(username, get = 0): # return id of user if founded. Return -1 if not founded. get can be 0(id), 1(username) and 2(password)
     query = f"SELECT * FROM notes.user where username = '{username}'"
     res = perform_search_query(query)
 
@@ -75,7 +103,3 @@ def search_user(username, get = 0): # return id of user if founded. Return -1 if
                 return res[0][get] # return according to get param
         else:
             print("Select the right get index.")
-
-def delete_note(note_id, user_id):
-    query = "DELETE FROM note WHERE id = %s AND user_id = %s"
-    return perform_query(query, (note_id, user_id))
