@@ -42,11 +42,28 @@ def perform_search_query(query, params=()):
         except Error as err:
             print(f"Error connecting to the database {err}")
             return None
+        
+# Encrypt Rail Fence
+def encrypt(text, rails=3):
+    encrypted_text = ""
+    for i in range(rails):
+        encrypted_text += text[i::rails]
+    return encrypted_text
+
+# Decrypt Rail Fence
+def decrypt(text, rails=3):
+    decrypted_text = [''] * len(text)
+    index = 0
+    for i in range(rails):
+        for j in range(i, len(text), rails):
+            decrypted_text[j] = text[index]
+            index += 1
+    return ''.join(decrypted_text)
 
 # Databse - Notes
 def insert_note(title, body, user_id):
     query = "INSERT INTO note (title, description, user_id) VALUES (%s, %s, %s)"
-    return perform_query(query, (title, body, user_id))
+    return perform_query(query, (encrypt(title), encrypt(body), user_id))
 
 # Database - User
 def insert_user(username, password):
