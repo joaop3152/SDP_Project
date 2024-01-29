@@ -20,11 +20,11 @@ def handle_client(client_socket, client_address, users):
     try:
         print(f"Connection established with {client_address}")
 
-        request = client_socket.recv(1024).decode().split(':')
+        res = client_socket.recv(1024).decode().split(':')
 
-        username = request[0]
-        password = request[1]
-        mode = request[2]
+        username = res[0]
+        password = res[1]
+        mode = res[2]
 
         # Verify user credentials (we may need to implement a more secure authentication mechanism)
         if authenticate_user(username, password, mode):
@@ -32,9 +32,11 @@ def handle_client(client_socket, client_address, users):
             client_socket.sendall(username.encode())
 
             users[username] = {'socket': client_socket, 'notes': []}
-            
+
+            user_id = database.search_user(username)
+
             # Handle user commands (create, list, delete notes, etc.)
-            handle_user_commands(username, users)
+            handle_user_commands(username, users, user_id)
         else:
             print(f"Authentication failed for {username}")
             client_socket.sendall("AUTH_FAILED".encode())
@@ -59,7 +61,7 @@ def authenticate_user(username, password, mode): ## mode 0 is register and mode 
 
     return True
 
-def handle_user_commands(username, users):
+def handle_user_commands(username, users, user_id):
     client_socket = users[username]['socket']
 
     while True:
