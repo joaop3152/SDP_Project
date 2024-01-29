@@ -20,10 +20,11 @@ def handle_client(client_socket, client_address, users):
     try:
         print(f"Connection established with {client_address}")
 
-        # User authentication
-        username = client_socket.recv(1024).decode()
-        password = client_socket.recv(1024).decode()
-        mode = client_socket.recv(1024).decode()
+        request = client_socket.recv(1024).decode().split(':')
+
+        username = request[0]
+        password = request[1]
+        mode = request[2]
 
         # Verify user credentials (we may need to implement a more secure authentication mechanism)
         if authenticate_user(username, password, mode):
@@ -43,13 +44,13 @@ def handle_client(client_socket, client_address, users):
         client_socket.close()
 
 # Add functions for user authentication and handling user commands
-def authenticate_user(username, password, type): ## type 0 is register and type 1 is auth
+def authenticate_user(username, password, mode): ## mode 0 is register and mode 1 is auth
     # CASES:    
-    if(database.search_user(username) == -1 and type == 0): #   username dont exist then register
+    if(database.search_user(username) == -1 and mode == 0): #   username dont exist then register
         database.insert_user(username, password)
         return True
     else:
-        if(type == 'register'): # trying to register a existing username
+        if(mode == 'register'): # trying to register a existing username
             return False
         #   username exist but password dont match
         if(database.search_user(username,2) != password):
