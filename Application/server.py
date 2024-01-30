@@ -29,7 +29,7 @@ def handle_client(client_socket, client_address, users):
         password = request[1]
         mode = request[2]
 
-        # Verify user credentials (we may need to implement a more secure authentication mechanism)
+        # Verify user credentials
         if authenticate_user(username, password, mode):
             print(f"Authentication successful for {username}")
             client_socket.sendall(username.encode())

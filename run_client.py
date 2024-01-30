@@ -6,7 +6,10 @@ from Application.client import *
 APP_TITLE = "Note Taking"
 SERVER_IP = '127.0.0.1' # ip of load balancer
 PORT = 8887 # port of load balancer
-ADDR = (SERVER_IP, PORT)
+
+# Define a list of servers (in case load balancer is down)
+data_list_ip   = [ '127.0.0.1' , '127.0.0.1' ] # the indexes of ips and ports have to match!
+data_list_port = [  8888       ,  8889       ] # add more servers if needed
 
 def show_unauthenticated_menu():
     utils.clear_console()
@@ -40,14 +43,43 @@ def restart_connection(client_socket):
     client_socket.close()
     main()
 
-def main():
-    try:
-        server_addr = get_loadbalancer_addr(SERVER_IP, PORT) # get port and ip from the server that LB redirect us (list -> ['0.0.0.0', 0000])
+def direct_connect():
+    connection_token = False # to check the connection
+    idx = 0
+    while not connection_token:
+        try:
+            client_socket = connect_to_server(data_list_ip[idx], data_list_port[idx])
+            connection_token = True
+        except:
+            print(f"Trying server {idx + 1}... Something went wrong with the connection. Trying next server...")
+            
+            idx += 1
+            
+            if(idx >= len(data_list_ip)):
+                print(f"\n{APP_TITLE} is currently down.\t\nGoodbye!\n")
+                sys.exit()
 
-        client_socket = connect_to_server(server_addr[0], server_addr[1])
-    except:
-        print("Something went wrong with the connection.")
-        sys.exit()
+        
+    return client_socket
+
+
+def main():
+    connection_token = False # to check the connection
+    timeout = 0 # after 5 tries connect directly to servers
+    while not connection_token:
+        try:
+            server_addr = get_loadbalancer_addr(SERVER_IP, PORT) # get port and ip from the server that LB redirect us (list -> ['0.0.0.0', 0000])
+            client_socket = connect_to_server(server_addr[0], server_addr[1])
+            connection_token = True
+        except:
+            if(timeout < 5):
+                print(f"Trying {timeout}... Something went wrong with the connection. Trying again...")
+            else:
+                print(f"Trying {timeout}... Something went wrong with the load balancer. Connecting to server directly...")
+                client_socket = direct_connect()
+                connection_token = True
+
+            timeout += 1
 
     # ----- Authentication Process ---------
     while True:
