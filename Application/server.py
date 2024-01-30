@@ -128,5 +128,5 @@ def delete_note(username, note_id, user_id, users):
 def formated_notes(cursor):
     result = ''
     for i in cursor:
-        result += "Note id: {} \n  Title: {} \n  Body: {}\n".format(i[0], i[1], i[2])
+        result += "Note id: {}\nTitle: {}\nBody: {}\n\n".format(i[0], i[1], i[2])
     return result
