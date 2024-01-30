@@ -114,12 +114,15 @@ def list_note(username, note_id, user_id, users):
 def delete_note(username, note_id, user_id, users):
     client_socket = users[username]['socket']
     try:
-        bd_delete_note(note_id, user_id)
-        print(f"\nNote deleted for {username}\n")
-        client_socket.sendall("Note deleted successfully".encode())
-    except IndexError:
-        print(f"Invalid note id for deletion")
-        client_socket.sendall("Invalid note id for deletion".encode())
+        note = bd_get_note(note_id, user_id) # check if note exists
+        if(len(note) == 0): 
+            client_socket.sendall("Invalid index for deletion. Please try again.".encode())
+        else: #exists
+            bd_delete_note(note_id, user_id)
+            print(f"\nNote deleted for {username}\n")
+            client_socket.sendall("Note deleted successfully.".encode())
+    except:
+        client_socket.sendall("Something went wrong.".encode())
 
 
 def formated_notes(cursor):
