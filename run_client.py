@@ -4,6 +4,7 @@ import Application.utilities as utils
 from Application.client import *
 
 APP_TITLE = "Note Taking"
+
 SERVER_IP = '127.0.0.1' # ip of load balancer
 PORT = 8887 # port of load balancer
 
@@ -59,11 +60,11 @@ def direct_connect():
                 print(f"\n{APP_TITLE} is currently down.\t\nGoodbye!\n")
                 sys.exit()
 
-        
     return client_socket
 
 
 def main():
+    # ----- Connection Process ---------
     connection_token = False # to check the connection
     timeout = 0 # after 5 tries connect directly to servers
     while not connection_token:
@@ -80,7 +81,8 @@ def main():
                 connection_token = True
 
             timeout += 1
-
+    #-----------------------------
+            
     # ----- Authentication Process ---------
     while True:
         show_unauthenticated_menu()
@@ -150,7 +152,6 @@ def main():
                         utils.clear_console()
                         list_note(client_socket, sub_choice)
 
-
         elif choice == "3": #Delete a note according an given index
             utils.clear_console()
             list_notes(client_socket)
@@ -162,6 +163,7 @@ def main():
             print(F"\nClosing client.\n Thank you for using {APP_TITLE}!\n")
             client_socket.close()
             break
+
         else: # Wrong input
             print("\nWrong option. Please try again.\n")
             input("Press Enter to continue...")
