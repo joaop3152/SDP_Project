@@ -25,7 +25,7 @@ def handle_client(client_socket): # send the server to redirect a client
 
     # Send the value to the client
     client_socket.sendall(str(data_to_send).encode())
-    print("sent client to " + str(data_to_send))
+    print("Sent client to " + str(data_to_send))
 
     # Close the connection
     client_socket.close()

@@ -87,10 +87,10 @@ def bd_delete_note(note_id, user_id):
 # Database - User
 def bd_insert_user(username, password):
     query = "INSERT INTO user (username, password) VALUES (%s, %s)"
-    return perform_query(query, (username, password))
+    return perform_query(query, (username, encrypt(password)))
 
 def bd_search_user(username, get = 0): # return id of user if founded. Return -1 if not founded. get can be 0(id), 1(username) and 2(password)
-    query = f"SELECT * FROM notes.user where username = '{username}'"
+    query = f"SELECT * FROM user where username = '{username}'"
     res = perform_search_query(query)
 
     if(len(res) == 0):

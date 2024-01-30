@@ -2,6 +2,7 @@
 import threading
 from Application.network import *
 from Model.database import *
+from Application.encryption import * 
 
 def start_server(host, port):
     server_socket = create_socket()
@@ -48,19 +49,19 @@ def handle_client(client_socket, client_address, users):
         client_socket.close()
 
 # Add functions for user authentication and handling user commands
-def authenticate_user(username, password, mode): ## mode 0 is register and mode 1 is auth
+def authenticate_user(username, password, mode): # mode 0 is register and mode 1 is auth
     # CASES:    
     if(bd_search_user(username) == -1 and mode == 'register'): #   username dont exist then register
         bd_insert_user(username, password)
         return True
+    elif(bd_search_user(username) == -1 and mode == 'authenticate'): # username dont exist
+        return False
     else:
         if(mode == 'register'): # trying to register a existing username
             return False
-        #   username exist but password dont match
-        if(bd_search_user(username,2) != password):
+        if(decrypt(bd_search_user(username,2)) != password): # username exist but password dont match
             return False
         
-
     return True
 
 def handle_user_commands(username, users, user_id):
