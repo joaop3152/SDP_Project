@@ -81,7 +81,7 @@ def handle_user_commands(username, users, user_id):
             list_note(username, note_index, user_id, users)
         elif command.startswith("DELETE_NOTE"):
             note_index = int(command.split(":")[1])
-            delete_note(username, note_index, user_id)
+            delete_note(username, note_index, user_id, users)
         elif command.startswith("GET_AUTH"):
             client_socket.sendall(username.encode())
 
@@ -111,12 +111,16 @@ def list_note(username, note_id, user_id, users):
     except:
         client_socket.sendall("Something went wrong.".encode())
 
-def delete_note(username, note_id, user_id):
+def delete_note(username, note_id, user_id, users):
+    client_socket = users[username]['socket']
     try:
         bd_delete_note(note_id, user_id)
         print(f"\nNote deleted for {username}\n")
+        client_socket.sendall("Note deleted successfully".encode())
     except IndexError:
         print(f"Invalid note id for deletion")
+        client_socket.sendall("Invalid note id for deletion".encode())
+
 
 def formated_notes(cursor):
     result = ''

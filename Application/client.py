@@ -56,5 +56,6 @@ def list_note(client_socket, note_id):
 
 def delete_note(client_socket, note_index):
     client_socket.sendall(f"DELETE_NOTE:{note_index}".encode())
-    print(f"\nNote deleted successfully\n")
+    res = client_socket.recv(1024).decode()
+    print(f"\n{res}\n")
     input("Press Enter to continue...")
