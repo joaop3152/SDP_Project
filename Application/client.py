@@ -12,7 +12,7 @@ def get_loadbalancer_addr(ip, port): #ip is string
 
     # Receive data from the load balancer (this data is the info of the server that the LB is redirecting us)
     data_received = client_socket.recv(1024).decode() #this is a list
-    print(f"Received data from Load Balancer: {data_received}")
+    print(f"Received data from Load Balancer: {data_received}\nPlease wait for incoming connections...")
 
     # Close the connection
     client_socket.close()

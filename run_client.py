@@ -49,11 +49,12 @@ def direct_connect():
     idx = 0
     while not connection_token:
         try:
+            print(f"Trying server {idx + 1}...")
             client_socket = connect_to_server(data_list_ip[idx], data_list_port[idx])
             connection_token = True
-        except:
-            print(f"Trying server {idx + 1}... Something went wrong with the connection. Trying next server...")
-            
+        except:            
+            print(f"Something went wrong with the connection. Trying next server...")
+
             idx += 1
             
             if(idx >= len(data_list_ip)):
