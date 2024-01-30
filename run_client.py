@@ -4,8 +4,9 @@ import Application.utilities as utils
 from Application.client import *
 
 APP_TITLE = "Note Taking"
-SERVER_IP = '127.0.0.1'
+SERVER_IP = '127.0.0.1' # ip of load balancer
 PORT = 8887 # port of load balancer
+ADDR = (SERVER_IP, PORT)
 
 def show_unauthenticated_menu():
     utils.clear_console()
@@ -41,8 +42,9 @@ def restart_connection(client_socket):
 
 def main():
     try:
-        serverport = int(get_loadbalancer_port(PORT))
-        client_socket = connect_to_server(SERVER_IP, serverport)
+        server_addr = get_loadbalancer_addr(SERVER_IP, PORT) # get port and ip from the server that LB redirect us (list -> ['0.0.0.0', 0000])
+
+        client_socket = connect_to_server(server_addr[0], server_addr[1])
     except:
         print("Something went wrong with the connection.")
         sys.exit()

@@ -6,18 +6,21 @@ def connect_to_server(host, port):
     client_socket.connect((host, port))
     return client_socket
 
-def get_loadbalancer_port(port):
+def get_loadbalancer_addr(ip, port): #ip is string
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect(('127.0.0.1', port))
+    client_socket.connect((ip, port)) # connect to load balancer
 
-    # Receive data from the server
-    data_received = client_socket.recv(1024).decode()
-    print(f"Received data from server: {data_received}")
+    # Receive data from the load balancer (this data is the info of the server that the LB is redirecting us)
+    data_received = client_socket.recv(1024).decode() #this is a list
+    print(f"Received data from Load Balancer: {data_received}")
 
     # Close the connection
     client_socket.close()
 
-    return data_received
+    result = data_received.split(":")
+    result[1] = int(result[1]) #pass the port (that is string) to int
+
+    return result
 
 def send_name(client_socket, username, password, mode):
     payload = username + ":" + password + ":" + mode
