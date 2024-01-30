@@ -77,7 +77,7 @@ def main():
             if(timeout < 5):
                 print(f"Trying {timeout}... Something went wrong with the connection. Trying again...")
             else:
-                print(f"Trying {timeout}... Something went wrong with the load balancer. Connecting to server directly...")
+                print(f"Trying {timeout}... Something went wrong with the load balancer or the servers. Trying to connect to servers directly...")
                 client_socket = direct_connect()
                 connection_token = True
 
